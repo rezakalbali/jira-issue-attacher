@@ -8,15 +8,7 @@ const KEYS = {
   descriptionTemplate: 'description-template'
 };
 
-const DEFAULTS = {
-  url: 'https://analytics.mohaymen.ir/dev/Analytics%20Collection/Analytics/_git/Web/pullrequestcreate',
-  param: 'sourceRef',
-  pattern: 'DATALM-\\d+',
-  urlForExtractTitle: 'https://jira.mohaymen.ir/browse/{{pattern}}',
-  titleSelector: 'input[aria-label="Enter a title"]',
-  descriptionSelector: 'textarea[aria-label="Description"]',
-  descriptionTemplate: '<div dir="rtl">\n\nاستوری\u200cهای مرتبط:\n\n- [{{title}}]({{link}})\n\n</div>'
-};
+const DEFAULTS = typeof JIRA_ATTACHER_DEFAULTS !== 'undefined' ? JIRA_ATTACHER_DEFAULTS : {};
 
 const form = document.getElementById('form');
 const statusEl = document.getElementById('status');
@@ -37,13 +29,13 @@ function showStatus(text, isError = false) {
 
 function load() {
   chrome.storage.sync.get(Object.values(KEYS), (stored) => {
-    fields.url.value = stored[KEYS.url] ?? DEFAULTS.url;
-    fields.param.value = stored[KEYS.param] ?? DEFAULTS.param;
-    fields.pattern.value = stored[KEYS.pattern] ?? DEFAULTS.pattern;
-    fields.urlForExtractTitle.value = stored[KEYS.urlForExtractTitle] ?? DEFAULTS.urlForExtractTitle;
-    fields.titleSelector.value = stored[KEYS.titleSelector] ?? DEFAULTS.titleSelector;
-    fields.descriptionSelector.value = stored[KEYS.descriptionSelector] ?? DEFAULTS.descriptionSelector;
-    fields.descriptionTemplate.value = stored[KEYS.descriptionTemplate] ?? DEFAULTS.descriptionTemplate;
+    fields.url.value = stored[KEYS.url] ?? DEFAULTS[KEYS.url];
+    fields.param.value = stored[KEYS.param] ?? DEFAULTS[KEYS.param];
+    fields.pattern.value = stored[KEYS.pattern] ?? DEFAULTS[KEYS.pattern];
+    fields.urlForExtractTitle.value = stored[KEYS.urlForExtractTitle] ?? DEFAULTS[KEYS.urlForExtractTitle];
+    fields.titleSelector.value = stored[KEYS.titleSelector] ?? DEFAULTS[KEYS.titleSelector];
+    fields.descriptionSelector.value = stored[KEYS.descriptionSelector] ?? DEFAULTS[KEYS.descriptionSelector];
+    fields.descriptionTemplate.value = stored[KEYS.descriptionTemplate] ?? DEFAULTS[KEYS.descriptionTemplate];
   });
 }
 
@@ -98,13 +90,13 @@ const resetBtn = document.getElementById('reset-btn');
 resetBtn.addEventListener('click', () => {
   const defaultsToStore = {};
   for (const k of Object.keys(KEYS)) {
-    defaultsToStore[KEYS[k]] = DEFAULTS[k];
+    defaultsToStore[KEYS[k]] = DEFAULTS[KEYS[k]];
   }
   chrome.storage.sync.set(defaultsToStore, () => {
     const origins = [];
     try {
-      origins.push(new URL(DEFAULTS.url).origin + '/*');
-      origins.push(new URL(DEFAULTS.urlForExtractTitle.replace(/\{\{pattern\}\}/g, 'x')).origin + '/*');
+      origins.push(new URL(DEFAULTS['url']).origin + '/*');
+      origins.push(new URL((DEFAULTS['url-for-extract-title'] || '').replace(/\{\{pattern\}\}/g, 'x')).origin + '/*');
     } catch (_) {}
     chrome.permissions.request({ origins }, (granted) => {
       showStatus(granted ? 'Reset to defaults. Permission granted.' : 'Reset to defaults.');

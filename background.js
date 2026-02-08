@@ -36,7 +36,7 @@ function tryInjectContentScript(tabId, tabUrl) {
   chrome.permissions.contains({ origins: [originPattern] }, (has) => {
     if (!has) return;
     if (injectedTabs.has(tabId)) return;
-    chrome.scripting.executeScript({ target: { tabId }, files: ['content.js'] }, () => {
+    chrome.scripting.executeScript({ target: { tabId }, files: ['config.js', 'content.js'] }, () => {
       if (!chrome.runtime.lastError) injectedTabs.add(tabId);
     });
   });

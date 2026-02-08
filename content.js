@@ -3,11 +3,9 @@
 
   if (window !== window.top) return;
 
+  const DEFAULTS = typeof JIRA_ATTACHER_DEFAULTS !== 'undefined' ? JIRA_ATTACHER_DEFAULTS : {};
   const STORAGE_KEYS = ['url', 'param', 'pattern'];
   const CLICK_STORAGE_KEYS = ['url-for-extract-title', 'title-selector', 'description-selector', 'description-template'];
-  const DEFAULT_URL = 'https://analytics.mohaymen.ir/dev/Analytics%20Collection/Analytics/_git/Web/pullrequestcreate';
-  const DEFAULT_PARAM = 'sourceRef';
-  const DEFAULT_PATTERN = 'DATALM-\\d+';
   const BUTTON_OFFSET_DEFAULT = -52;
   const BUTTON_OFFSET_HOVER = -6;
   const URL_POLL_MS = 350;
@@ -25,7 +23,7 @@
   }
 
   function urlMatches(storedUrl, currentHref) {
-    const base = pathnameBase(storedUrl || DEFAULT_URL);
+    const base = pathnameBase(storedUrl || DEFAULTS['url']);
     if (!base) return false;
     const current = pathnameBase(currentHref);
     return current === base || current.startsWith(base + '/');
@@ -140,12 +138,12 @@
   function onButtonClick() {
     const href = window.location.href;
     chrome.storage.sync.get([...STORAGE_KEYS, ...CLICK_STORAGE_KEYS], (stored) => {
-      const param = stored.param ?? DEFAULT_PARAM;
-      const pattern = stored.pattern ?? DEFAULT_PATTERN;
-      const urlForExtractTitle = stored['url-for-extract-title'] ?? 'https://jira.mohaymen.ir/browse/{{pattern}}';
-      const titleSelector = stored['title-selector'] ?? 'input[aria-label="Enter a title"]';
-      const descriptionSelector = stored['description-selector'] ?? 'textarea[aria-label="Description"]';
-      const descriptionTemplate = stored['description-template'] ?? '<div dir="rtl">\n\nاستوری\u200cهای مرتبط:\n\n- [{{title}}]({{link}})\n\n</div>';
+      const param = stored.param ?? DEFAULTS['param'];
+      const pattern = stored.pattern ?? DEFAULTS['pattern'];
+      const urlForExtractTitle = stored['url-for-extract-title'] ?? DEFAULTS['url-for-extract-title'];
+      const titleSelector = stored['title-selector'] ?? DEFAULTS['title-selector'];
+      const descriptionSelector = stored['description-selector'] ?? DEFAULTS['description-selector'];
+      const descriptionTemplate = stored['description-template'] ?? DEFAULTS['description-template'];
       const match = getPatternMatch(param, pattern, href);
       if (!match) return;
       const extractUrl = urlForExtractTitle.replace(/\{\{pattern\}\}/g, match);
@@ -211,8 +209,8 @@
     lastHref = href;
     chrome.storage.sync.get(STORAGE_KEYS, (stored) => {
       const configuredUrl = stored.url;
-      const param = stored.param ?? DEFAULT_PARAM;
-      const pattern = stored.pattern ?? DEFAULT_PATTERN;
+      const param = stored.param ?? DEFAULTS['param'];
+      const pattern = stored.pattern ?? DEFAULTS['pattern'];
       const onRightUrl = urlMatches(configuredUrl, href);
       const patternMatch = patternFoundInParam(param, pattern, href);
       syncButton(onRightUrl && patternMatch);
