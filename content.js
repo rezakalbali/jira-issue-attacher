@@ -4,6 +4,7 @@
   if (window !== window.top) return;
 
   const STORAGE_KEYS = ['url', 'param', 'pattern'];
+  const CLICK_STORAGE_KEYS = ['url-for-extract-title', 'title-selector', 'description-selector', 'description-template'];
   const DEFAULT_URL = 'https://analytics.mohaymen.ir/dev/Analytics%20Collection/Analytics/_git/Web/pullrequestcreate';
   const DEFAULT_PARAM = 'sourceRef';
   const DEFAULT_PATTERN = 'DATALM-\\d+';
@@ -41,6 +42,19 @@
       return re.test(value);
     } catch (_) {
       return false;
+    }
+  }
+
+  function getPatternMatch(paramName, patternStr, currentHref) {
+    try {
+      const url = new URL(currentHref, window.location.origin);
+      const value = url.searchParams.get(paramName?.trim() ?? '');
+      if (value == null || value === '') return null;
+      const re = new RegExp((patternStr ?? '').trim());
+      const m = value.match(re);
+      return m ? m[0] : null;
+    } catch (_) {
+      return null;
     }
   }
 
@@ -116,10 +130,53 @@
       if (tooltipTimer) clearTimeout(tooltipTimer);
       tooltip.style.opacity = '0';
     });
+    btn.addEventListener('click', onButtonClick);
     const wrapper = document.createElement('div');
     wrapper.appendChild(tooltip);
     wrapper.appendChild(btn);
     return wrapper;
+  }
+
+  function onButtonClick() {
+    const href = window.location.href;
+    chrome.storage.sync.get([...STORAGE_KEYS, ...CLICK_STORAGE_KEYS], (stored) => {
+      const param = stored.param ?? DEFAULT_PARAM;
+      const pattern = stored.pattern ?? DEFAULT_PATTERN;
+      const urlForExtractTitle = stored['url-for-extract-title'] ?? 'https://jira.mohaymen.ir/browse/{{pattern}}';
+      const titleSelector = stored['title-selector'] ?? 'input[aria-label="Enter a title"]';
+      const descriptionSelector = stored['description-selector'] ?? 'textarea[aria-label="Description"]';
+      const descriptionTemplate = stored['description-template'] ?? '<div dir="rtl">\n\n## Developer\n\nاستوری\u200cهای مرتبط:\n\n- [{{title}}]({{link}})\n\n</div>';
+      const match = getPatternMatch(param, pattern, href);
+      if (!match) return;
+      const extractUrl = urlForExtractTitle.replace(/\{\{pattern\}\}/g, match);
+      const requestId = Date.now() + '-' + Math.random();
+      const onResult = (msg) => {
+        if (msg.type !== 'getPageTitleResult' || msg.requestId !== requestId) return;
+        chrome.runtime.onMessage.removeListener(onResult);
+        if (!msg.ok || msg.title == null) return;
+        let rawTitle = String(msg.title).trim();
+        const keyPrefix = `[${match}] `;
+        if (rawTitle.startsWith(keyPrefix)) rawTitle = rawTitle.slice(keyPrefix.length);
+        if (rawTitle.endsWith(' - Jira')) rawTitle = rawTitle.slice(0, -7).trim();
+        const cleanTitle = rawTitle || match;
+        const link = extractUrl;
+        const titleEl = document.querySelector(titleSelector);
+        const descEl = document.querySelector(descriptionSelector);
+        if (titleEl) {
+          titleEl.value = cleanTitle;
+          titleEl.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        if (descEl && descriptionTemplate) {
+          const body = descriptionTemplate.replace(/\{\{title\}\}/g, cleanTitle).replace(/\{\{link\}\}/g, link);
+          descEl.value = body;
+          descEl.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      };
+      chrome.runtime.onMessage.addListener(onResult);
+      chrome.runtime.sendMessage({ type: 'getPageTitle', url: extractUrl, requestId }, (res) => {
+        if (chrome.runtime.lastError || !(res && res.ok)) chrome.runtime.onMessage.removeListener(onResult);
+      });
+    });
   }
 
   let btnEl = null;
