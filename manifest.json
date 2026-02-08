@@ -3,26 +3,10 @@
   "name": "Jira Issue Attacher",
   "version": "1.0.0",
   "description": "Fill PR title and description from Jira story link",
-  "permissions": ["tabs", "storage"],
-  "host_permissions": [
-    "https://analytics.mohaymen.ir/*",
-    "https://jira.mohaymen.ir/*"
-  ],
-  "action": {
-    "default_title": "Jira Issue Attacher"
-  },
-  "options_ui": {
-    "page": "options.html",
-    "open_in_tab": true
-  },
-  "background": {
-    "service_worker": "background.js"
-  },
-  "content_scripts": [
-    {
-      "matches": ["https://analytics.mohaymen.ir/*"],
-      "js": ["content.js"],
-      "run_at": "document_idle"
-    }
-  ]
+  "permissions": ["tabs", "storage", "scripting"],
+  "host_permissions": ["https://analytics.mohaymen.ir/*", "https://jira.mohaymen.ir/*"],
+  "optional_host_permissions": ["https://*/*", "http://*/*"],
+  "action": { "default_title": "Jira Issue Attacher" },
+  "options_ui": { "page": "options.html", "open_in_tab": true },
+  "background": { "service_worker": "background.js" }
 }

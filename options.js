@@ -77,7 +77,19 @@ form.addEventListener('submit', (e) => {
       [KEYS.descriptionTemplate]: descriptionTemplate
     },
     () => {
-      showStatus('Saved.');
+      const origins = [];
+      try {
+        if (url) origins.push(new URL(url).origin + '/*');
+        if (urlForExtractTitle) origins.push(new URL(urlForExtractTitle.replace(/\{\{pattern\}\}/g, 'x')).origin + '/*');
+      } catch (_) {}
+      const unique = [...new Set(origins)];
+      if (unique.length) {
+        chrome.permissions.request({ origins: unique }, (granted) => {
+          showStatus(granted ? 'Saved. Permission granted.' : 'Saved. Grant host permission for the extension to work on the configured URL(s).');
+        });
+      } else {
+        showStatus('Saved.');
+      }
     }
   );
 });
@@ -89,8 +101,15 @@ resetBtn.addEventListener('click', () => {
     defaultsToStore[KEYS[k]] = DEFAULTS[k];
   }
   chrome.storage.sync.set(defaultsToStore, () => {
-    showStatus('Reset to defaults.');
-    load();
+    const origins = [];
+    try {
+      origins.push(new URL(DEFAULTS.url).origin + '/*');
+      origins.push(new URL(DEFAULTS.urlForExtractTitle.replace(/\{\{pattern\}\}/g, 'x')).origin + '/*');
+    } catch (_) {}
+    chrome.permissions.request({ origins }, (granted) => {
+      showStatus(granted ? 'Reset to defaults. Permission granted.' : 'Reset to defaults.');
+      load();
+    });
   });
 });
 
