@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تنظیمات</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px;
+      background: #181818;
+      color: #b0b0b0;
+      font-size: 13px;
+    }
+    .card {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .fields-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 20px;
+    }
+    .fields-grid .field-full { grid-column: 1 / -1; }
+    h2 {
+      margin: 0 0 20px 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #e0e0e0;
+    }
+    .field { margin-bottom: 14px; }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      color: #808080;
+      margin-bottom: 4px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 6px 10px;
+      font-size: 13px;
+      border: none;
+      border-bottom: 1px solid #333;
+      border-radius: 0;
+      background: transparent;
+      color: #e0e0e0;
+    }
+    textarea { min-height: 240px; resize: vertical; }
+    input::placeholder, textarea::placeholder { color: #555; }
+    input:focus, textarea:focus {
+      outline: none;
+      border-bottom-color: #0078d4;
+    }
+    .hint {
+      font-size: 11px;
+      color: #555;
+      margin-top: 3px;
+    }
+    button {
+      margin-top: 16px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #fff;
+      background: #0078d4;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    #status { margin-top: 12px; font-size: 12px; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>تنظیمات افزونه</h2>
+    <form id="form">
+      <div class="fields-grid">
+        <div class="field">
+          <label for="url">URL</label>
+          <input type="text" id="url" name="url" placeholder="https://example.com/page">
+          <span class="hint">آدرس صفحه‌ای که افزونه روی آن فعال است</span>
+        </div>
+        <div class="field">
+          <label for="param">param</label>
+          <input type="text" id="param" name="param" placeholder="sourceRef">
+          <span class="hint">نام queryparam که در آن الگوی مورد نظر جستجو میشود.</span>
+        </div>
+        <div class="field">
+          <label for="pattern">pattern</label>
+          <input type="text" id="pattern" name="pattern" placeholder="DATALM-\\d+">
+          <span class="hint">الگوی regex برای جستجو در مقدار param</span>
+        </div>
+        <div class="field">
+          <label for="url-for-extract-title">url for extract title</label>
+          <input type="text" id="url-for-extract-title" name="urlForExtractTitle" placeholder="https://site.com/browse/{{pattern}}">
+          <span class="hint">از {{pattern}} برای جایگذاری pattern استفاده کنید</span>
+        </div>
+        <div class="field">
+          <label for="title-selector">title selector</label>
+          <input type="text" id="title-selector" name="titleSelector" placeholder='input[aria-label="Enter a title"]'>
+          <span class="hint">selector المان عنوان (مثلاً input عنوان PR)</span>
+        </div>
+        <div class="field">
+          <label for="description-selector">description selector</label>
+          <input type="text" id="description-selector" name="descriptionSelector" placeholder='textarea[aria-label="Description"]'>
+          <span class="hint">selector المان توضیحات (مثلاً textarea توضیحات PR)</span>
+        </div>
+        <div class="field field-full">
+          <label for="description-template">template of description</label>
+          <textarea id="description-template" name="descriptionTemplate" placeholder='از {{title}} و {{link}} در متن استفاده کنید'></textarea>
+          <span class="hint">قالب متن توضیحات؛ از {{title}} و {{link}} برای جایگذاری استفاده کنید</span>
+        </div>
+      </div>
+      <button type="submit">ذخیره</button>
+    </form>
+    <p id="status"></p>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>

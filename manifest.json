@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Jira Issue Attacher",
+  "version": "1.0.0",
+  "description": "پر کردن خودکار توضیحات و عنوان PR با لینک و عنوان استوری جیرا",
+  "permissions": ["tabs", "storage"],
+  "host_permissions": [
+    "https://analytics.mohaymen.ir/*",
+    "https://jira.mohaymen.ir/*"
+  ],
+  "action": {
+    "default_title": "Jira Issue Attacher"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://analytics.mohaymen.ir/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
