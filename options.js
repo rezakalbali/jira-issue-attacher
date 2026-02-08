@@ -61,7 +61,7 @@ form.addEventListener('submit', (e) => {
     try {
       new RegExp(pattern);
     } catch (_) {
-      showStatus('الگوی regex نامعتبر است.', true);
+      showStatus('Invalid regex pattern.', true);
       return;
     }
   }
@@ -77,9 +77,21 @@ form.addEventListener('submit', (e) => {
       [KEYS.descriptionTemplate]: descriptionTemplate
     },
     () => {
-      showStatus('ذخیره شد.');
+      showStatus('Saved.');
     }
   );
+});
+
+const resetBtn = document.getElementById('reset-btn');
+resetBtn.addEventListener('click', () => {
+  const defaultsToStore = {};
+  for (const k of Object.keys(KEYS)) {
+    defaultsToStore[KEYS[k]] = DEFAULTS[k];
+  }
+  chrome.storage.sync.set(defaultsToStore, () => {
+    showStatus('Reset to defaults.');
+    load();
+  });
 });
 
 load();

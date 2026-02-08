@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Jira Issue Attacher",
   "version": "1.0.0",
-  "description": "پر کردن خودکار توضیحات و عنوان PR با لینک و عنوان استوری جیرا",
+  "description": "Fill PR title and description from Jira story link",
   "permissions": ["tabs", "storage"],
   "host_permissions": [
     "https://analytics.mohaymen.ir/*",
