@@ -145,7 +145,7 @@
       const urlForExtractTitle = stored['url-for-extract-title'] ?? 'https://jira.mohaymen.ir/browse/{{pattern}}';
       const titleSelector = stored['title-selector'] ?? 'input[aria-label="Enter a title"]';
       const descriptionSelector = stored['description-selector'] ?? 'textarea[aria-label="Description"]';
-      const descriptionTemplate = stored['description-template'] ?? '<div dir="rtl">\n\n## Developer\n\nاستوری\u200cهای مرتبط:\n\n- [{{title}}]({{link}})\n\n</div>';
+      const descriptionTemplate = stored['description-template'] ?? '<div dir="rtl">\n\nاستوری\u200cهای مرتبط:\n\n- [{{title}}]({{link}})\n\n</div>';
       const match = getPatternMatch(param, pattern, href);
       if (!match) return;
       const extractUrl = urlForExtractTitle.replace(/\{\{pattern\}\}/g, match);

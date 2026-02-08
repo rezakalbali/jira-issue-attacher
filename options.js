@@ -15,7 +15,7 @@ const DEFAULTS = {
   urlForExtractTitle: 'https://jira.mohaymen.ir/browse/{{pattern}}',
   titleSelector: 'input[aria-label="Enter a title"]',
   descriptionSelector: 'textarea[aria-label="Description"]',
-  descriptionTemplate: '<div dir="rtl">\n\n## Developer\n\nاستوری\u200cهای مرتبط:\n\n- [{{title}}]({{link}})\n\n</div>'
+  descriptionTemplate: '<div dir="rtl">\n\nاستوری\u200cهای مرتبط:\n\n- [{{title}}]({{link}})\n\n</div>'
 };
 
 const form = document.getElementById('form');
