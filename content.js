@@ -81,12 +81,45 @@
       btn.style.background = '#106EBE';
       btn.style.boxShadow = '0 3px 10px rgba(0,0,0,0.25)';
     });
+    const tooltip = document.createElement('span');
+    tooltip.textContent = 'Fill PR title and description from Jira story link';
+    tooltip.setAttribute('role', 'tooltip');
+    tooltip.style.cssText = [
+      'position:fixed',
+      'top:calc(5rem + 24px)',
+      'inset-inline-end:232px',
+      'transform:translateY(-50%)',
+      'max-width:260px',
+      'padding:10px 14px',
+      'background:#1a1a1a',
+      'color:#e8e8e8',
+      'font-size:12px',
+      'line-height:1.45',
+      'border-radius:6px',
+      'opacity:0',
+      'pointer-events:none',
+      'z-index:2147483646',
+      'transition:opacity .15s ease',
+      'box-shadow:0 4px 12px rgba(0,0,0,0.4)'
+    ].join(';');
+    let tooltipTimer = null;
+    btn.addEventListener('mouseenter', () => {
+      btn.style.insetInlineEnd = `${BUTTON_OFFSET_HOVER}px`;
+      btn.style.background = '#106EBE';
+      btn.style.boxShadow = '0 3px 10px rgba(0,0,0,0.25)';
+      tooltipTimer = setTimeout(() => { tooltip.style.opacity = '1'; }, 400);
+    });
     btn.addEventListener('mouseleave', () => {
       btn.style.insetInlineEnd = `${BUTTON_OFFSET_DEFAULT}px`;
       btn.style.background = '#0078D4';
       btn.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
+      if (tooltipTimer) clearTimeout(tooltipTimer);
+      tooltip.style.opacity = '0';
     });
-    return btn;
+    const wrapper = document.createElement('div');
+    wrapper.appendChild(tooltip);
+    wrapper.appendChild(btn);
+    return wrapper;
   }
 
   let btnEl = null;
